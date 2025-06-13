@@ -29,16 +29,14 @@ Scope
 * Only the API and related code is in scope. No GUI of any kind is required
 
 
-Original Project Info
+Updated Project Info
 =====================
 
-To run a server locally execute the following command:
-
-`mvn jetty:run`
+To run the tomcat server locally, simply start the CakeManagerApplication class, which is the main entry point of the application.
 
 and access the following URL:
 
-`http://localhost:8282/`
+`http://localhost:8080/swagger-ui/index.html`
 
 Feel free to change how the project is run, but clear instructions must be given in README
 You can use any IDE you like, so long as the project can build and run with Maven or Gradle.
