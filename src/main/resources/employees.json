@@ -1,0 +1,16 @@
+[
+  {
+    "email": "aneilloudon@gmail.com",
+    "firstName": "Andrew",
+    "lastName": "Loudon",
+    "role": "USER",
+    "username": "tester"
+  },
+  {
+    "email": "gordon@ramsay.com",
+    "firstName": "Gordon",
+    "lastName": "Ramsay",
+    "role": "CHEF",
+    "username": "headchef"
+  }
+]

@@ -15,7 +15,7 @@ public interface CakeService {
 
     void addCake(CakeEntityDTO cakeEntity) throws RecordAlreadyExistsException;
 
-    void updateCake(Integer id, String title, String description, String imageUrl) throws RecordAlreadyExistsException;
+    List<String> updateCake(Integer id, String title, String description, String imageUrl) throws RecordAlreadyExistsException;
 
     void deleteCake(Integer id);
 

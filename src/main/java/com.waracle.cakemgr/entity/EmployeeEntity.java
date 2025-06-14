@@ -1,5 +1,6 @@
 package com.waracle.cakemgr.entity;
 
+import com.waracle.cakemgr.security.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
@@ -23,5 +24,11 @@ public class EmployeeEntity {
 
     @Column(name = "LAST_NAME", nullable = false, length = 300)
     private String lastName;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @Column(unique = true, nullable = false, length = 50)
+    private String username;
 
 }

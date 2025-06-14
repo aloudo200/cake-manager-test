@@ -50,11 +50,11 @@ public class CakeController {
             @RequestParam(required = false) String description,
             @RequestParam(required = false) String imageUrl) throws RecordAlreadyExistsException {
         if (Stream.of(title, description, imageUrl).allMatch(Objects::isNull)) {
-            LOG.warn("No fields provided for update on cake with id {}", id);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            LOG.error("No fields provided for update on cake with id {}", id);
+            return new ResponseEntity<>(String.format("No fields provided for update on cake with id '%d'", id), HttpStatus.BAD_REQUEST);
         }
-        cakeService.updateCake(id, title, description, imageUrl);
-        return new ResponseEntity<>(String.format("Successfully updated cake with id %d", id), HttpStatus.OK);
+        List<String> updatedFields = cakeService.updateCake(id, title, description, imageUrl);
+        return new ResponseEntity<>(String.format("Successfully updated '%s' on cake with id %d", updatedFields, id), HttpStatus.OK);
     }
 
     @PostMapping("/addNewCake")
@@ -65,7 +65,7 @@ public class CakeController {
         return new ResponseEntity<>(String.format("Cake with title '%s' created successfully", cakeEntity.getTitle()), HttpStatus.CREATED);
     }
 
-    @PostMapping("/deleteCake/{id}")
+    @DeleteMapping("/deleteCake/{id}")
     @Operation(summary = "Removes a cake from the database")
     @ApiResponse(responseCode = "200", description = "Cake deleted successfully")
     public ResponseEntity<String> deleteCake(@PathVariable Integer id) {

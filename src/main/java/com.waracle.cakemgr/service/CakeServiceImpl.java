@@ -1,7 +1,7 @@
 package com.waracle.cakemgr.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.waracle.cakemgr.dao.CakeEntityDAO;
+import com.waracle.cakemgr.repository.CakeRepository;
 import com.waracle.cakemgr.dto.CakeEntityDTO;
 import com.waracle.cakemgr.entity.CakeEntity;
 import com.waracle.cakemgr.exception.RecordAlreadyExistsException;
@@ -18,19 +18,17 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class CakeServiceImpl implements CakeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(CakeServiceImpl.class);
 
-    private final CakeEntityDAO cakeEntityDAO;
+    private final CakeRepository cakeRepository;
 
-    public CakeServiceImpl(CakeEntityDAO cakeEntityDAO) {
-        this.cakeEntityDAO = cakeEntityDAO;
+    public CakeServiceImpl(CakeRepository cakeRepository) {
+        this.cakeRepository = cakeRepository;
     }
 
     @PostConstruct
@@ -43,7 +41,7 @@ public class CakeServiceImpl implements CakeService {
     public List<CakeEntity> retrieveAllCakes() {
 
         try {
-            return cakeEntityDAO.findAll();
+            return cakeRepository.findAll();
         } catch (Exception e) {
             LOG.error("Error retrieving cakes from in-memory database: {} ", e.getMessage());
             throw new RuntimeException("Failed to retrieve cakes from database", e);
@@ -52,7 +50,7 @@ public class CakeServiceImpl implements CakeService {
 
     @Override
     public CakeEntity retrieveCakeById(Integer id) {
-        return cakeEntityDAO.findById(id)
+        return cakeRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException(String.format("Cake with id '%d' not found", id)));
     }
 
@@ -65,7 +63,7 @@ public class CakeServiceImpl implements CakeService {
         entity.setImage(newCake.getImageUrl());
 
         try {
-            cakeEntityDAO.persistRecord(entity);
+            cakeRepository.save(entity);
             LOG.info("Added new cake entity: '{}'", newCake.getTitle());
         } catch (DataIntegrityViolationException ex) {
             LOG.error("Data integrity violation for cake '{}': ", newCake.getTitle(), ex);
@@ -80,7 +78,7 @@ public class CakeServiceImpl implements CakeService {
     public void deleteCake(Integer id) throws RecordNotFoundException {
         CakeEntity cake = retrieveCakeById(id);
         try {
-            cakeEntityDAO.deleteRecord(cake);
+            cakeRepository.delete(cake);
             LOG.info("Deleted cake entity: '{}'", cake.getTitle());
         } catch (Exception e) {
             LOG.error("Error deleting cake from in-memory database: {}", e.getMessage());
@@ -88,18 +86,29 @@ public class CakeServiceImpl implements CakeService {
         }
     }
     @Override
-    public void updateCake(Integer id, String title, String description, String imageUrl)
+    public List<String> updateCake(Integer id, String title, String description, String imageUrl)
             throws RecordAlreadyExistsException, RecordNotFoundException {
 
         CakeEntity existingCake = retrieveCakeById(id);
 
-        if (title != null) existingCake.setTitle(title);
-        if (description != null) existingCake.setDesc(description);
-        if (imageUrl != null) existingCake.setImage(imageUrl);
+        List<String> updatedFields = new ArrayList<>();
+
+        Optional.ofNullable(title).ifPresent(t -> {
+            existingCake.setTitle(t);
+            updatedFields.add("title");
+        });
+        Optional.ofNullable(description).ifPresent(d -> {
+            existingCake.setDesc(d);
+            updatedFields.add("description");
+        });
+        Optional.ofNullable(imageUrl).ifPresent(i -> {
+            existingCake.setImage(i);
+            updatedFields.add("imageUrl");
+        });
 
         try {
-            cakeEntityDAO.updateRecord(existingCake);
-            LOG.info("Updated cake entity: '{}'", existingCake.getTitle());
+            cakeRepository.save(existingCake);
+            LOG.info("Updated '{}' on cake entity with ID: '{}'", updatedFields, existingCake.getCakeId());
         } catch (DataIntegrityViolationException  ex) {
             LOG.error("Constraint violation updating cake '{}': ", existingCake.getTitle(), ex);
             throw new RecordAlreadyExistsException(
@@ -108,6 +117,7 @@ public class CakeServiceImpl implements CakeService {
             LOG.error("Error updating cake in in-memory database: {} ", e.getMessage());
             throw new RuntimeException("Failed to update cake in database", e);
         }
+        return updatedFields;
     }
 
     private void loadFromRemote() throws HTTPException {
@@ -129,7 +139,7 @@ public class CakeServiceImpl implements CakeService {
 
             for (CakeEntity cakeEntity : cakes) {
                 try {
-                    cakeEntityDAO.persistRecord(cakeEntity);
+                    cakeRepository.save(cakeEntity);
                     LOG.info("Added cake entity: '{}'", cakeEntity.getTitle());
                 } catch (DataIntegrityViolationException ex) {
                     LOG.error("Encountered data integrity violation for cake '{}': ", cakeEntity.getTitle(), ex);
