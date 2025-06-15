@@ -27,6 +27,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                             .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").authenticated()
                             .requestMatchers(HttpMethod.GET, "/rest/cakes/**").hasAnyRole("USER", "CHEF")
                             .requestMatchers(HttpMethod.GET, "/rest/cakes/getAllCakes").hasAnyRole("USER", "CHEF")
+                            .requestMatchers(HttpMethod.GET, "/rest/cakes/getCakeById/**").hasAnyRole("USER", "CHEF")
                             .requestMatchers(HttpMethod.POST, "/rest/cakes/addNewCake").hasAnyRole("USER", "CHEF")
                             .requestMatchers(HttpMethod.PUT, "/rest/cakes/updateCake/**").hasRole("CHEF")
                             .requestMatchers(HttpMethod.DELETE, "/rest/cakes/deleteCake/**").hasRole("CHEF")

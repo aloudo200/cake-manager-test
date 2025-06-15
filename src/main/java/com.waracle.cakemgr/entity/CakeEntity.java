@@ -1,7 +1,9 @@
 package com.waracle.cakemgr.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serial;
@@ -10,6 +12,8 @@ import java.io.Serializable;
 @Data
 @Entity
 @DynamicUpdate
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "Cake", uniqueConstraints = {@UniqueConstraint(columnNames = "ID")})
 public class CakeEntity implements Serializable {
 

@@ -1,7 +1,8 @@
-FROM openjdk:26-jdk-slim
+FROM eclipse-temurin:21-jdk-jammy
 LABEL authors="Andrew Loudon"
 
 # Use a docker-uat profile for the app. Nothing is configured for this at the moment, but it can be in future
+# i.e. application-docker-UAT.yml
 ENV SPRING_PROFILES_ACTIVE=docker-UAT
 
 WORKDIR /app

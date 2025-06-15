@@ -32,13 +32,13 @@ public class CakeController {
     @GetMapping("/getAllCakes")
     @Operation(summary = "Retrieves all cakes from the database")
     public ResponseEntity<List<CakeEntity>> getAllCakes() {
+        return new ResponseEntity<>(cakeService.retrieveAllCakes(), HttpStatus.OK);
+    }
 
-        try {
-            return new ResponseEntity<>(cakeService.retrieveAllCakes(), HttpStatus.OK);
-        } catch (Exception e) {
-            LOG.error("Error retrieving cakes: {}", e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @GetMapping("/getCakeById/{id}")
+    @Operation(summary = "Retrieves a specific cake from the database")
+    public ResponseEntity<CakeEntity> getCakeById(@PathVariable Integer id) {
+        return new ResponseEntity<>(cakeService.retrieveCakeById(id), HttpStatus.OK);
     }
 
     @PutMapping("/updateCake/{id}") // use PUT for idempotency

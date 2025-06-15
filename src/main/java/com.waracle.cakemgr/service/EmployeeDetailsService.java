@@ -41,12 +41,12 @@ public class EmployeeDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         return User.withUsername(emp.getUsername())
-                .password("{noop}password")  // for mock purposes, password is not important
+                .password("{noop}waracle")  // for mock purposes, password is not important
                 .roles(emp.getRole().name())
                 .build();
     }
 
-    private void importEmployeesFromJson() {
+    protected void importEmployeesFromJson() {
 
         List<EmployeeEntity> employees;
 
@@ -77,4 +77,3 @@ public class EmployeeDetailsService implements UserDetailsService {
     }
 
 }
-

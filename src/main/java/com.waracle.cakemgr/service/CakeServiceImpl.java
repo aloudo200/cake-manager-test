@@ -120,7 +120,7 @@ public class CakeServiceImpl implements CakeService {
         return updatedFields;
     }
 
-    private void loadFromRemote() throws HTTPException {
+    protected void loadFromRemote() throws HTTPException {
 
         HashSet<CakeEntity> cakes = new HashSet<>();
 
